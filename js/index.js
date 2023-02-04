@@ -84,7 +84,7 @@ const editLrcSentence = (x) => {
     resetTimer()
     lrc.handle = x
     LrcMutexLock()
-    showLrcSentence(lrc.handle)
+    lrc.fList[lrc.handle]["timeMeta"].length > 0 ? showLrcSentence(lrc.handle, true) : showLrcSentence(lrc.handle, false)
 }
 
 const showLrcResult = (index) => {
