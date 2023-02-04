@@ -67,7 +67,7 @@ const timeToMili = (str) => {
 const parseMeta = (x) => {
     const meta = (s, i) => `&lt;${s},${i}&gt;`
     var metas = "[tt]&lt;0,0&gt;"
-    lrc.fList[x]["timeMeta"].forEach((v, i) => { metas += meta(v, i) })
+    lrc.fList[x]["timeMeta"].forEach((v, i) => { metas += meta(v, i + 1) })
     metas += `&lt;${lrc.fList[x]["timeMeta"].slice(-1)}&gt;`
     return metas
 }
@@ -75,27 +75,34 @@ const parseMeta = (x) => {
 const parseMetaString = (x) => {
     const meta = (s, i) => `<${s},${i}>`
     var metas = "[tt]<0,0>"
-    lrc.fList[x]["timeMeta"].forEach((v, i) => { metas += meta(v, i) })
+    lrc.fList[x]["timeMeta"].forEach((v, i) => { metas += meta(v, i + 1) })
     metas += `<${lrc.fList[x]["timeMeta"].slice(-1)}>`
     return metas
 }
 
+const editLrcSentence = (x) => {
+    resetTimer()
+    lrc.handle = x
+    LrcMutexLock()
+    showLrcSentence(lrc.handle)
+}
+
 const showLrcResult = (index) => {
-    console.log(lrc.fList[index])
+    // console.log(lrc.fList[index])
     var resDom = document.getElementById("res")
     var res = ""
     for (var x = 0; x <= index; x++) {
         if (lrc.fList[x]["have"]) {
             res += `
-            <div class="lrc-res-item">
-                <p class="lrc-res-sentence">${lrc.fList[x]["sentence"]}</p>
-                ${lrc.fList[x].metaIsAdd ? `<p class="lrc-res-sentence">[${lrc.fList[x]["time"]}]${parseMeta(x)}</p>` : ""}
+            <div class="lrc-res-item" onclick="editLrcSentence(${x})">
+                <div class="lrc-res-sentence">${lrc.fList[x]["sentence"]}</div>
+                ${lrc.fList[x].metaIsAdd ? `<div class="lrc-res-sentence">[${lrc.fList[x]["time"]}]${parseMeta(x)}</div>` : ""}
             </div>
             `
         } else {
             res += `
             <div class="lrc-res-item">
-                <p class="lrc-res-sentence">${lrc.fList[x]["sentence"]}</p>
+                <div class="lrc-res-sentence">${lrc.fList[x]["sentence"]}</div>
             </div>
             `
         }
@@ -127,8 +134,27 @@ const exportLrcResult = (filename = "demo.lrcx") => {
     URL.revokeObjectURL(objectURL)
 }
 
-const showLrcSentence = (index) => {
-    document.getElementById("lrc-sentence").innerHTML = lrc.fList[index]["sentence"] || "(该行无文字，请编辑下一句)"
+const showLrcSentence = (index, showMeta = false) => {
+    if (index < lrc.fList.length) {
+        var res = ""
+        if (lrc.fList[index]["have"]) {
+            res += `
+            <div class="lrc-res-item default-cursor">
+                <div class="lrc-res-sentence">${lrc.fList[index]["sentence"]}</div>
+                ${showMeta ? `<div class="lrc-res-sentence">[${lrc.fList[index]["time"]}]${parseMeta(index)}</div>` : ""}
+            </div>
+            `
+        } else {
+            res += `
+            <div class="lrc-res-item default-cursor">
+                <div class="lrc-res-sentence">${lrc.fList[index]["sentence"] || "(该行无文字，请编辑下一句)"}</div>
+            </div>
+            `
+        }
+        document.getElementById("lrc-sentence").innerHTML = res
+    } else {
+        document.getElementById("lrc-sentence").innerHTML = "（结束）"
+    }
     if (index < lrc.fList.length - 1) {
         document.getElementById("next-lrc-sentence").innerHTML = `下一句：${lrc.fList[index + 1]["sentence"]}`
     } else {
@@ -140,10 +166,16 @@ const handleLrcSentence = (index) => {
     resetTimer()
     showLrcSentence(index)
     // console.log(lrc.fList)
-    lrc.fList[index]["metaIsAdd"] = false
-    lrc.fList[index]["timeMeta"] = []
-    StartTimer(lrc.fList[index]["sustain"] / 10)
-    lrc.recording = true
+    if (index < lrc.fList.length) {
+        lrc.fList[index]["metaIsAdd"] = false
+        lrc.fList[index]["timeMeta"] = []
+        StartTimer(lrc.fList[index]["sustain"] / 10)
+        lrc.recording = true
+    } else {
+        console.log("最后一句话已经处理完啦，没有咯！")
+        LrcMutexLock()
+        lrc.recording = false
+    }
 }
 
 const RecordTimeMeta = (index) => {
@@ -160,6 +192,8 @@ document.getElementById("reset-all").addEventListener("click", () => {
     document.getElementById("lrc-sentence").innerText = "当前未处理数据"
     document.getElementById("timer").innerText = "00:00:00.00"
     document.getElementById("begin").innerText = "开始"
+    document.getElementById("next-lrc-sentence").innerText = "下一句：等待装填"
+    document.getElementById("res").innerHTML = ""
 }, false)
 
 
@@ -199,7 +233,7 @@ document.getElementById("confirm-input").addEventListener("click", () => {
 
 document.getElementById("next-sentence").addEventListener("click", () => {
     resetTimer()
-    if (lrc.handle < lrc.fList.length - 1) {
+    if (lrc.handle < lrc.fList.length) {
         lrc.handle++
         LrcMutexUnlock()
     } else {
@@ -210,6 +244,18 @@ document.getElementById("next-sentence").addEventListener("click", () => {
     showLrcResult(lrc.handle - 1)
 }, false)
 
+document.getElementById("last-sentence").addEventListener("click", () => {
+    LrcMutexLock()
+    resetTimer()
+    if (lrc.handle > 0) {
+        lrc.handle--
+    } else {
+        console.log("到头了")
+    }
+    showLrcSentence(lrc.handle)
+    showLrcResult(lrc.handle)
+}, false)
+
 
 document.getElementById("begin").addEventListener("click", () => {
     resetTimer()
@@ -217,9 +263,14 @@ document.getElementById("begin").addEventListener("click", () => {
 }, false)
 
 document.getElementById("record").addEventListener("click", () => {
-    if (timer.record > 500) {
-        resetTimer()
+    if (lrc.recording && !lrc.recordingLock) {
+        RecordTimeMeta(lrc.handle)
+    } else if (!lrc.recording && !lrc.recordingLock) {
+        handleLrcSentence(lrc.handle)
+    } else {
+        LrcMutexLock()
     }
+    showLrcSentence(lrc.handle, true)
 }, false)
 
 document.getElementById("lrc-export").addEventListener("click", () => {
@@ -227,7 +278,7 @@ document.getElementById("lrc-export").addEventListener("click", () => {
 })
 
 document.addEventListener("keypress", (event) => {
-    if (event.code == "Space" && lrc.handling) {
+    if (event.code == "Space" && !event.shiftKey && lrc.handling) {
         if (lrc.recording && !lrc.recordingLock) {
             RecordTimeMeta(lrc.handle)
         } else if (!lrc.recording && !lrc.recordingLock) {
@@ -235,10 +286,12 @@ document.addEventListener("keypress", (event) => {
         } else {
             LrcMutexLock()
         }
+        showLrcSentence(lrc.handle, true)
         event.preventDefault()
     } else if (event.code == "Enter" && !event.shiftKey && lrc.handling) {
+        // 下一句
         resetTimer()
-        if (lrc.handle < lrc.fList.length - 1) {
+        if (lrc.handle < lrc.fList.length) {
             lrc.handle++
             LrcMutexUnlock()
         } else {
@@ -247,11 +300,22 @@ document.addEventListener("keypress", (event) => {
         }
         showLrcSentence(lrc.handle)
         showLrcResult(lrc.handle - 1)
-        // console.log(lrc.fList[lrc.handle], lrc.fList[lrc.handle - 1])
         event.preventDefault()
-    } else if (event.code == "Enter" && event.shiftKey && lrc.handling) {
+    } else if (event.code == "Space" && event.shiftKey && lrc.handling) {
+        // 解锁打点
         resetTimer()
         LrcMutexUnlock()
+    } else if (event.code == "Enter" && event.shiftKey && lrc.handling) {
+        // 上一句
+        LrcMutexLock()
+        resetTimer()
+        if (lrc.handle > 0) {
+            lrc.handle--
+        } else {
+            console.log("到头了")
+        }
+        showLrcSentence(lrc.handle)
+        showLrcResult(lrc.handle)
     }
 }, false)
 
