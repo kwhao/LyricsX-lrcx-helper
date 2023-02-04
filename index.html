@@ -1,0 +1,67 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡拉不啦OK - LyricsX 歌词逐字打点辅助工具</title>
+</head>
+
+<body class="light-theme">
+    <div style="margin: auto;text-align: center;">卡拉不啦OK - LyricsX 歌词逐字打点辅助工具</div>
+    <div id="app">
+        <div id="left" class="app-column">
+            <textarea id="lrc-input" placeholder="请输入lrc格式歌词，输入完毕后请点击解析数据..."></textarea>
+        </div>
+        <div id="center" class="app-column">
+            <div class="center-item">
+                <div class="button btn-main">
+                    <div id="reset-all" class="btn-inner">重置</div>
+                </div>
+            </div>
+            <div class="center-item">
+                <div class="button btn-warning">
+                    <div id="confirm-input" class="btn-inner">解析数据</div>
+                </div>
+            </div>
+            <div class="center-item">
+                <div id="lrc-sentence" class="center-content">当前未处理数据</div>
+            </div>
+            <div class="center-item">
+                <div id="timer" class="center-content">00:00:00.00</div>
+            </div>
+            <div class="center-item">
+                <div class="button btn-main">
+                    <div id="begin" class="btn-inner">开始</div>
+                </div>
+            </div>
+            <div class="center-item">
+                <div class="button btn-info">
+                    <div id="record" class="btn-inner">记次/ 按 Space</div>
+                </div>
+            </div>
+            <div class="center-item">
+                <div class="button btn-success">
+                    <div id="next-sentence" class="btn-inner">下一句/ 按 Enter</div>
+                </div>
+            </div>
+            <div class="center-item">
+                <div class="button btn-warning">
+                    <div id="lrc-export" class="btn-inner">导出lrcx</div>
+                </div>
+            </div>
+            <div class="center-item">
+                <div id="next-lrc-sentence" class="center-content">下一句：</div>
+            </div>
+        </div>
+        <div id="right" class="app-column">
+            <div id="res"></div>
+        </div>
+    </div>
+    <div style="margin: auto;text-align: center;">Kwhao©</div>
+</body>
+<script src="js/index.js"></script>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/style.css">
+
+</html>
