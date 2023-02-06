@@ -91,7 +91,8 @@ const showLrcResult = (index) => {
     // console.log(lrc.fList[index])
     var resDom = document.getElementById("res")
     var res = ""
-    for (var x = 0; x <= index; x++) {
+    var yLength = 0
+    for (var x = 0; x < lrc.fList.length; x++) {
         if (lrc.fList[x]["have"]) {
             res += `
             <div class="lrc-res-item" onclick="editLrcSentence(${x})">
@@ -106,11 +107,14 @@ const showLrcResult = (index) => {
             </div>
             `
         }
+        resDom.innerHTML = res
+        if (index == 0 || x == index - 1) {
+            yLength = resDom.scrollHeight
+        }
     }
-    resDom.innerHTML = res
 
     rightDom = document.getElementById("right")
-    rightDom.scrollTop = rightDom.scrollHeight
+    rightDom.scrollTop = yLength
 }
 
 const exportLrcResult = (filename = "demo.lrcx") => {
