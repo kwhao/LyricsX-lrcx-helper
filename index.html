@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>卡拉不啦OK - LyricsX 歌词逐字打点辅助工具</title>
+    <title>卡拉不啦OK - LyricsX & Lyricify 歌词逐字打点辅助工具</title>
 </head>
 
 <body class="light-theme">
-    <div style="margin: auto;text-align: center;">卡拉不啦OK - LyricsX 歌词逐字打点辅助工具</div>
+    <div style="margin: auto;text-align: center;">卡拉不啦OK - <a class="inner-a"
+            href="https://github.com/ddddxxx/LyricsX">LyricsX</a> & <a class="inner-a"
+            href="https://github.com/WXRIW/Lyricify-App">Lyricify</a> 歌词逐字打点辅助工具</div>
     <div id="app">
         <div id="left" class="app-column">
-            <textarea id="lrc-input" placeholder="请输入lrc格式歌词，输入完毕后请点击解析数据..."></textarea>
+            <textarea id="lrc-input"
+                placeholder="请输入lrc格式歌词，输入完毕后请点击解析数据...&#10;然后点击开始即可按空格打点，按回车下一句...&#10;注意，每句唱完最后一个字后，多打一个点作为该句结尾点"></textarea>
         </div>
         <div id="center" class="app-column">
             <div class="center-item">
@@ -52,8 +55,19 @@
             </div>
             <div class="center-item">
                 <div class="button btn-warning">
-                    <div id="lrc-export" class="btn-inner">导出lrcx</div>
+                    <div id="lrcx-export" class="btn-inner">导出 .lrcx</div>
                 </div>
+            </div>
+            <div class="center-item">
+                <span>(.lrcx 适用于<a class="inner-a" href="https://github.com/ddddxxx/LyricsX">LyricsX</a>)</span>
+            </div>
+            <div class="center-item">
+                <div class="button btn-warning">
+                    <div id="qrc-export" class="btn-inner">导出 .qrc</div>
+                </div>
+            </div>
+            <div class="center-item">
+                <span>(.qrc 适用于<a class="inner-a" href="https://github.com/WXRIW/Lyricify-App">Lyricify</a>)</span>
             </div>
             <div class="center-item">
                 <div id="next-lrc-sentence" class="center-content">下一句：</div>

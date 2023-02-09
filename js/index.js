@@ -39,7 +39,7 @@ const LrcMutexUnlock = () => {
 //     timeMeta: []
 // }
 
-const TIME_REG = /\[([0-9]*\:){1,2}[0-9]*\.?[0-9]*\]/
+const TIME_REG = /\[(\d*:){1,2}\d*.?\d*\]/
 var timer = {
     time: null,
     hour: 0,
@@ -117,7 +117,7 @@ const showLrcResult = (index) => {
     rightDom.scrollTop = yLength
 }
 
-const exportLrcResult = (filename = "demo.lrcx") => {
+const exportLrcxResult = (filename = "demo.lrcx") => {
     // console.log(lrc.fList[index])
     var resDom = document.getElementById("res")
     var res = ""
@@ -137,6 +137,40 @@ const exportLrcResult = (filename = "demo.lrcx") => {
     aTag.click()
     URL.revokeObjectURL(objectURL)
 }
+
+const exportQrcResult = (filename = "demo.qrc") => {
+    const qrcSentenceHelp = (v) => {
+        var s_old = v["sentence"].replace(TIME_REG, "")
+        var timeCount = timeToMili(v["time"])
+        var s_new = ""
+        var keepon = 0
+        for (var x = 0; x < s_old.length; x++) {
+            s_new = s_new + s_old[x] + (x < v["timeMeta"].length ? `(${timeCount + keepon},${v["timeMeta"][x] - v["timeMeta"][x - 1]})` : "")
+            keepon = v["timeMeta"][x]
+        }
+        console.log(keepon, keepon > 0)
+        s_new = `[${timeToMili(v["time"])}${keepon > 0 ? "," + keepon : ""}]` + s_new
+        return s_new
+    }
+
+    var res = ""
+    for (var x = 0; x < lrc.fList.length; x++) {
+        if (lrc.fList[x]["have"]) {
+            res += qrcSentenceHelp(lrc.fList[x]) + "\n"
+        } else {
+            res += `${lrc.fList[x]["sentence"]}\n`
+        }
+    }
+
+    var blob = new Blob([res], { type: "text/plain;charset=utf-8" })
+    const objectURL = URL.createObjectURL(blob)
+    const aTag = document.createElement('a')
+    aTag.href = objectURL
+    aTag.download = filename
+    aTag.click()
+    URL.revokeObjectURL(objectURL)
+}
+
 
 const showLrcSentence = (index, showMeta = false) => {
     if (index < lrc.fList.length) {
@@ -277,8 +311,12 @@ document.getElementById("record").addEventListener("click", () => {
     showLrcSentence(lrc.handle, true)
 }, false)
 
-document.getElementById("lrc-export").addEventListener("click", () => {
-    exportLrcResult()
+document.getElementById("lrcx-export").addEventListener("click", () => {
+    exportLrcxResult()
+})
+
+document.getElementById("qrc-export").addEventListener("click", () => {
+    exportQrcResult()
 })
 
 document.addEventListener("keypress", (event) => {
