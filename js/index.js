@@ -116,8 +116,8 @@ const showLrcResult = (index) => {
         if (lrc.fList[x]["have"]) {
             res += `
             <div class="lrc-res-item" onclick="editLrcSentence(${x})">
-                <div class="lrc-res-sentence">${lrc.fList[x]["sentence"]} #(words: <font color=#CC5120>${lrc.isEnglish ? lrc.fList[x]["sentence"].replace(TIME_REG, "").trim().split(" ").length : lrc.fList[x]["sentence"].replace(TIME_REG, "").length}</font>)</div>
-                ${lrc.fList[x].metaIsAdd ? `<div class="lrc-res-sentence">[${lrc.fList[x]["time"]}]${parseMeta(x)} #(tags: <font color=#551DB0>${lrc.fList[x]["timeMeta"].length}</font>)</div>` : ""}
+                <div class="lrc-res-sentence">${lrc.fList[x]["sentence"]} #(words: <font color="#CC5120">${lrc.isEnglish ? lrc.fList[x]["sentence"].replace(TIME_REG, "").trim().split(" ").length : lrc.fList[x]["sentence"].replace(TIME_REG, "").length}</font>)</div>
+                ${lrc.fList[x].metaIsAdd ? `<div class="lrc-res-sentence">[${lrc.fList[x]["time"]}]${parseMeta(x)} #(tags: <font color="#551DB0">${lrc.fList[x]["timeMeta"].length}</font>)</div>` : ""}
             </div>
             `
         } else {
@@ -178,7 +178,7 @@ const exportQrcResult = (filename = "demo.qrc") => {
         var s_new = ""
         var keepon = 0
         for (var x = 0; x < s_old.length; x++) {
-            s_new = s_new + s_old[x] + (x < v["timeMeta"].length ? `(${timeCount + keepon},${v["timeMeta"][x] - (v["timeMeta"][x - 1] || 0)})` : "")
+            s_new = s_new + s_old[x]+ " " + (x < v["timeMeta"].length ? `(${timeCount + keepon},${v["timeMeta"][x] - (v["timeMeta"][x - 1] || 0)})` : "")
             keepon = v["timeMeta"][x]
         }
         console.log(keepon, keepon > 0)
