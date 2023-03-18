@@ -178,7 +178,7 @@ const exportQrcResult = (filename = "demo.qrc") => {
         var s_new = ""
         var keepon = 0
         for (var x = 0; x < s_old.length; x++) {
-            s_new = s_new + s_old[x]+ " " + (x < v["timeMeta"].length ? `(${timeCount + keepon},${v["timeMeta"][x] - (v["timeMeta"][x - 1] || 0)})` : "")
+            s_new = s_new + s_old[x] + (lrc.isEnglish ? " " : "") + (x < v["timeMeta"].length ? `(${timeCount + keepon},${v["timeMeta"][x] - (v["timeMeta"][x - 1] || 0)})` : "")
             keepon = v["timeMeta"][x]
         }
         console.log(keepon, keepon > 0)
