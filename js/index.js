@@ -1,6 +1,7 @@
 var lrc = {
     handle: 0,
     former: "",
+    isEnglish: false,
     fList: [],
     latter: "",
     lList: [],
@@ -80,6 +81,26 @@ const parseMetaString = (x) => {
     return metas
 }
 
+const parseEngMetaString = (x) => {
+    const meta = (s, i) => `<${s},${i}>`
+    var tagLength = 0
+    var metas = "[tt]<0,0>"
+    lrc.fList[x]["timeMeta"].forEach((v, i) => {
+        wordsList = lrc.fList[x].sentence.replace(TIME_REG, "").trim().split(" ")
+        if (i < wordsList.length - 1) {
+            wl = wordsList[i].length + 1 //+1 for space
+            tagLength += wl
+        } else if (i == wordsList.length - 1) {
+            wl = wordsList[i].length
+            tagLength += wl
+        }
+        tagLength++
+        metas += meta(v, tagLength)
+    })
+    metas += `<${lrc.fList[x]["timeMeta"].slice(-1)}>`
+    return metas
+}
+
 const editLrcSentence = (x) => {
     resetTimer()
     lrc.handle = x
@@ -88,7 +109,6 @@ const editLrcSentence = (x) => {
 }
 
 const showLrcResult = (index) => {
-    // console.log(lrc.fList[index])
     var resDom = document.getElementById("res")
     var res = ""
     var yLength = 0
@@ -96,8 +116,8 @@ const showLrcResult = (index) => {
         if (lrc.fList[x]["have"]) {
             res += `
             <div class="lrc-res-item" onclick="editLrcSentence(${x})">
-                <div class="lrc-res-sentence">${lrc.fList[x]["sentence"]}</div>
-                ${lrc.fList[x].metaIsAdd ? `<div class="lrc-res-sentence">[${lrc.fList[x]["time"]}]${parseMeta(x)}</div>` : ""}
+                <div class="lrc-res-sentence">${lrc.fList[x]["sentence"]} #(words: <font color=#CC5120>${lrc.isEnglish ? lrc.fList[x]["sentence"].replace(TIME_REG, "").trim().split(" ").length : lrc.fList[x]["sentence"].replace(TIME_REG, "").length}</font>)</div>
+                ${lrc.fList[x].metaIsAdd ? `<div class="lrc-res-sentence">[${lrc.fList[x]["time"]}]${parseMeta(x)} #(tags: <font color=#551DB0>${lrc.fList[x]["timeMeta"].length}</font>)</div>` : ""}
             </div>
             `
         } else {
@@ -118,14 +138,24 @@ const showLrcResult = (index) => {
 }
 
 const exportLrcxResult = (filename = "demo.lrcx") => {
-    // console.log(lrc.fList[index])
+    console.log(lrc)
     var resDom = document.getElementById("res")
     var res = ""
-    for (var x = 0; x < lrc.fList.length; x++) {
-        if (lrc.fList[x]["have"]) {
-            res += `${lrc.fList[x]["sentence"]}\n${lrc.fList[x].metaIsAdd ? `[${lrc.fList[x]["time"]}]${parseMetaString(x)}\n` : ""}`
-        } else {
-            res += `${lrc.fList[x]["sentence"]}\n`
+    if (!lrc.isEnglish) {
+        for (var x = 0; x < lrc.fList.length; x++) {
+            if (lrc.fList[x]["have"]) {
+                res += `${lrc.fList[x]["sentence"]}\n${lrc.fList[x].metaIsAdd ? `[${lrc.fList[x]["time"]}]${parseMetaString(x)}\n` : ""}`
+            } else {
+                res += `${lrc.fList[x]["sentence"]}\n`
+            }
+        }
+    } else {
+        for (var x = 0; x < lrc.fList.length; x++) {
+            if (lrc.fList[x]["have"]) {
+                res += `${lrc.fList[x]["sentence"]}\n${lrc.fList[x].metaIsAdd ? `[${lrc.fList[x]["time"]}]${parseEngMetaString(x)}\n` : ""}`
+            } else {
+                res += `${lrc.fList[x]["sentence"]}\n`
+            }
         }
     }
 
@@ -141,6 +171,9 @@ const exportLrcxResult = (filename = "demo.lrcx") => {
 const exportQrcResult = (filename = "demo.qrc") => {
     const qrcSentenceHelp = (v) => {
         var s_old = v["sentence"].replace(TIME_REG, "")
+        if (lrc.isEnglish) {
+            s_old = s_old.trim().split(" ")
+        }
         var timeCount = timeToMili(v["time"])
         var s_new = ""
         var keepon = 0
@@ -178,8 +211,8 @@ const showLrcSentence = (index, showMeta = false) => {
         if (lrc.fList[index]["have"]) {
             res += `
             <div class="lrc-res-item default-cursor">
-                <div class="lrc-res-sentence">${lrc.fList[index]["sentence"]}</div>
-                ${showMeta ? `<div class="lrc-res-sentence">[${lrc.fList[index]["time"]}]${parseMeta(index)}</div>` : ""}
+                <div class="lrc-res-sentence">${lrc.fList[index]["sentence"]} #(words: ${lrc.isEnglish ? lrc.fList[index]["sentence"].replace(TIME_REG, "").trim().split(" ").length : lrc.fList[index]["sentence"].replace(TIME_REG, "").length})</div>
+                ${showMeta ? `<div class="lrc-res-sentence">[${lrc.fList[index]["time"]}]${parseMeta(index)} #(tags: ${lrc.fList[index]["timeMeta"].length})</div>` : ""}
             </div>
             `
         } else {
@@ -234,6 +267,14 @@ document.getElementById("reset-all").addEventListener("click", () => {
     document.getElementById("res").innerHTML = ""
 }, false)
 
+document.getElementById("is-english").addEventListener("click", () => {
+    lrc.isEnglish = !lrc.isEnglish
+    if (lrc.isEnglish) {
+        document.getElementById("is-english").classList.add("arco-switch-checked")
+    } else {
+        document.getElementById("is-english").classList.remove("arco-switch-checked")
+    }
+}, false)
 
 document.getElementById("confirm-input").addEventListener("click", () => {
     resetLrc()

@@ -140,3 +140,46 @@
 .default-cursor:hover {
     cursor: default;
 }
+
+
+.arco-switch {
+    position: relative;
+    box-sizing: border-box;
+    min-width: 40px;
+    height: 24px;
+    padding: 0;
+    overflow: hidden;
+    line-height: 24px;
+    vertical-align: middle;
+    background-color: rgb(201, 205, 212);
+    border: none;
+    border-radius: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: background-color .2s cubic-bezier(.34, .69, .1, 1);
+}
+
+.arco-switch-checked {
+    background-color: rgb(22, 93, 255);
+}
+
+
+.arco-switch-handle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: #fff;
+    font-size: 12px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: all .2s cubic-bezier(.34, .69, .1, 1)
+}
+
+.arco-switch-checked .arco-switch-handle {
+    left: calc(100% - 20px);
+}
